@@ -39,10 +39,21 @@ class PokeBuilderController:
 
     def confirm_team(self, event):
         selected_items = self.view.selected_team_listbox.get(0, tk.END)
+        team_name = "Default Team"  # Consider allowing the user to specify this or making it unique each time
+
+        # Clear existing team members if reusing the same team name; comment this out if accumulating members
+        self.model.clear_team_members(team_name)
+
+        # Add new members
         for item in selected_items:
-            self.model.add_pokemon_to_team("Default Team", item)
+            self.model.add_pokemon_to_team(team_name, item)
+
+        # Save the current state of teams to the data file
         self.save_teams_data()
-        self.view.update_team_list()
+
+        # Update the team list in the UI
+        self.view.update_saved_teams_tab()
+
 
     def display_pokemon_details(self, event):
         # Implement display logic for selected Pokémon details

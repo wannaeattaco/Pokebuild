@@ -59,21 +59,25 @@ class PokemonModel:
             self.saved_teams = pd.concat([self.saved_teams, new_entry], ignore_index=True, )
             self.saved_teams.to_csv('saved_teams.csv', index=False)
 
-    # PokemonModel class
     def delete_team(self, index):
         if 0 <= index < len(self.saved_teams):
-            # Drop the team at the given index
-            self.saved_teams = self.saved_teams.drop(index).reset_index(drop=True)
+            # Drop the team at the given index and reset the DataFrame index
+            self.saved_teams.drop(index, inplace=True)
+            self.saved_teams.reset_index(drop=True, inplace=True)
             # Save the updated DataFrame back to the CSV to reflect changes
             self.saved_teams.to_csv(self.saved_teams_file, index=False)
 
     def add_pokemon_to_team(self, team_name, pokemon):
-        if team_name in self.saved_teams['Team Name'].values:
-            team_index = self.saved_teams[self.saved_teams['Team Name'] == team_name].index[0]
-            self.saved_teams.at[team_index, 'Members'] += ',' + pokemon
-            self.saved_teams.to_csv('saved_teams.csv', index=False)
+        team_index = self.saved_teams[self.saved_teams['Team Name'] == team_name].index
+        if not team_index.empty:
+            team_index = team_index[0]
+            existing_members = self.saved_teams.loc[team_index, 'Members'].split(',')
+            if pokemon not in existing_members:
+                existing_members.append(pokemon)
+                self.saved_teams.at[team_index, 'Members'] = ','.join(existing_members)
+                self.saved_teams.to_csv(self.saved_teams_file, index=False)
         else:
             self.save_team(team_name, [pokemon])
-
+            
     def get_saved_teams(self):
         return self.saved_teams

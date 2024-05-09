@@ -272,9 +272,11 @@ class PokeBuilderView:
             self.pokemon_listbox.insert('end', name) 
 
     def update_saved_teams_tab(self):
-        self.team_listbox.delete(0, tk.END)
+        self.team_listbox.delete(0, tk.END)  # Clear all current entries
         for _, row in self.model.saved_teams.iterrows():
-            self.team_listbox.insert(tk.END, f"{row['Team Name']} - {row['Members']}")
+            team_info = f"{row['Team Name']} - {row['Members']}"
+            self.team_listbox.insert(tk.END, team_info)  # Insert updated info
+
     def delete_selected_team(self):
         selected_index = self.team_listbox.curselection()
         if selected_index:
@@ -287,9 +289,10 @@ class PokeBuilderView:
     def on_delete_button_clicked(self):
         selected_index = self.team_listbox.curselection()
         if selected_index:
-            # Extract the first (and should be only) element of the tuple, which is the index
-            index_to_delete = selected_index[0]
-            self.controller.delete_team(index_to_delete)
-            self.update_saved_teams_tab()  # Refresh the list to reflect deletion
+            self.controller.delete_team(selected_index[0])
+            self.update_saved_teams_tab()  # Refresh the list
         else:
             messagebox.showerror("Error", "Please select a team to delete.")
+
+    def refresh_view(self):
+        self.update_saved_teams_tab() 

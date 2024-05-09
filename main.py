@@ -140,8 +140,8 @@ class PokeBuilderApp:
         self.selected_team_listbox = tk.Listbox(self.select_tab, height=5)
         self.selected_team_listbox.pack(padx=10, pady=10, fill=tk.X, expand=True)
 
-        confirm_team_button = ttk.Button(self.select_tab, text="Confirm Team", command=self.confirm_team)
-        confirm_team_button.pack(pady=5, expand=True)
+        confirm_button = ttk.Button(self.select_tab, text="Confirm Team", command=self.confirm_team)
+        confirm_button.pack(pady=5, expand=True)
 
         add_button = ttk.Button(self.select_tab, text="Add Pokémon", command=self.add_pokemon)
         add_button.pack(pady=5, expand=True)
