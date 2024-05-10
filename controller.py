@@ -54,7 +54,6 @@ class PokeBuilderController:
         # Update the team list in the UI
         self.view.update_saved_teams_tab()
 
-
     def display_pokemon_details(self, event):
         # Implement display logic for selected Pokémon details
         pass

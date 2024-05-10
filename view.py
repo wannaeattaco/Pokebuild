@@ -146,7 +146,7 @@ class PokeBuilderView:
         if self.current_team:
             details = [(pokemon, self.pokemon_data[pokemon]['Type 1'], self.pokemon_data[pokemon]['Type 2'], self.pokemon_data[pokemon]['Total'])
                        for pokemon in self.current_team if pokemon in self.pokemon_data]
-            self.update_graph_listbox(details)
+            self.update_graph_listbox()
             messagebox.showinfo("Team Confirmed", f"Your team with {len(self.current_team)} Pokémon has been confirmed.")
         else:
             messagebox.showerror("No Team", "No Pokémon have been added to the team.")
