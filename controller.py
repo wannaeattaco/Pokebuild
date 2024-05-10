@@ -65,9 +65,6 @@ class PokeBuilderController:
         except FileNotFoundError:
             self.saved_teams = pd.DataFrame(columns=['Team Name', 'Members'])
 
-    def get_saved_teams(self):
-        return self.model.get_saved_teams if self.model.get_saved_teams is not None else pd.DataFrame(columns=['Team Name', 'Members'])
-
     def save_current_team(self, team_name, current_team):
         self.model.save_team(team_name, current_team)
 

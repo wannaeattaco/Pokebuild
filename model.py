@@ -78,6 +78,3 @@ class PokemonModel:
                 self.saved_teams.to_csv(self.saved_teams_file, index=False)
         else:
             self.save_team(team_name, [pokemon])
-            
-    def get_saved_teams(self):
-        return self.saved_teams

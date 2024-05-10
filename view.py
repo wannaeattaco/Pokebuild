@@ -124,20 +124,18 @@ class PokeBuilderView:
         selected_indices = self.pokemon_listbox.curselection()
         for index in selected_indices:
             pokemon = self.pokemon_listbox.get(index)
-            if pokemon not in self.current_team:  # Ensure no duplicates
+            if pokemon not in self.current_team:
                 self.current_team.append(pokemon)
                 self.selected_team_listbox.insert(tk.END, pokemon)
-        self.update_graph_listbox()  # Optional, update other parts of UI if needed
-
+                self.update_graph_listbox() 
     def delete_selected_pokemon(self):
         selected_indices = self.selected_team_listbox.curselection()
-        if selected_indices:
-            for index in reversed(selected_indices):  # Start from end to avoid index shifting
-                pokemon_to_remove = self.selected_team_listbox.get(index)
-                self.selected_team_listbox.delete(index)
-                if pokemon_to_remove in self.current_team:
-                    self.current_team.remove(pokemon_to_remove)
-        self.update_graph_listbox()  # Update graphs or related UI components
+        for index in reversed(selected_indices):  # Start from end to avoid index shifting
+            pokemon_to_remove = self.selected_team_listbox.get(index)
+            self.selected_team_listbox.delete(index)
+            if pokemon_to_remove in self.current_team:
+                self.current_team.remove(pokemon_to_remove)
+                self.update_graph_listbox() 
 
     def clear_team(self):
         self.selected_team_listbox.delete(0, tk.END)
@@ -146,24 +144,19 @@ class PokeBuilderView:
 
     def confirm_team(self):
         if self.current_team:
+            details = [(pokemon, self.pokemon_data[pokemon]['Type 1'], self.pokemon_data[pokemon]['Type 2'], self.pokemon_data[pokemon]['Total'])
+                       for pokemon in self.current_team if pokemon in self.pokemon_data]
+            self.update_graph_listbox(details)
             messagebox.showinfo("Team Confirmed", f"Your team with {len(self.current_team)} Pokémon has been confirmed.")
         else:
             messagebox.showerror("No Team", "No Pokémon have been added to the team.")
-
     def update_graph_listbox(self):
-        # Assuming you have a matplotlib plot or similar in your UI for displaying team stats
-        if not self.current_team:
-            self.ax.clear()  # Clear the plot if no team members are selected
-            self.canvas.draw()
-            return
-        
-        # Example: Update a graph based on the Pokémon types or stats in the team
-        team_stats = [self.pokemon_data[pokemon]['Stat'] for pokemon in self.current_team if pokemon in self.pokemon_data]
-        self.ax.clear()
-        self.ax.bar(range(len(team_stats)), team_stats)  # Simple bar graph of stats
-        self.ax.set_title('Team Stats Overview')
-        self.canvas.draw()
-
+        self.graph_listbox.delete(0, tk.END)  # Clear the list box first
+        for pokemon_name in self.current_team:
+            pokemon_data = self.pokemon_data[self.pokemon_data['Name'] == pokemon_name]
+            if not pokemon_data.empty:
+                entry = f"{pokemon_name} - Type: {pokemon_data['Type 1'].values[0]}, Stats: HP {pokemon_data['HP'].values[0]}, Atk {pokemon_data['Attack'].values[0]}"
+                self.graph_listbox.insert(tk.END, entry)
 
     def setup_graph_tab(self):
         self.canvas = None
@@ -173,6 +166,13 @@ class PokeBuilderView:
         self.canvas = FigureCanvasTkAgg(self.figure, self.graph_tab)
         self.canvas.draw()
         self.canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
+        self.graph_frame = ttk.Frame(self.graph_tab)
+        self.graph_frame.pack(fill=tk.BOTH, expand=True)
+
+        self.graph_listbox = tk.Listbox(self.graph_tab, height=10)
+        self.graph_listbox.pack(fill=tk.BOTH, expand=True)
+        self.update_graph_listbox()
+
         save_team_button = ttk.Button(self.graph_tab, text="Save Current Team", command=self.save_team)
         save_team_button.pack(pady=5, expand=True)
 
@@ -187,6 +187,7 @@ class PokeBuilderView:
     def setup_team_tab(self):
         default_data = self.controller.initialize_pokemon_list()  # Ensure this method exists and returns the initial full list
         self.update_pokemon_list(default_data)
+
         # Create a frame inside the team tab for layout
         team_frame = ttk.Frame(self.team_tab)
         team_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
@@ -290,7 +291,7 @@ class PokeBuilderView:
         selected_index = self.team_listbox.curselection()
         if selected_index:
             self.controller.delete_team(selected_index[0])
-            self.update_saved_teams_tab()  # Refresh the list
+            self.update_saved_teams_tab()  
         else:
             messagebox.showerror("Error", "Please select a team to delete.")
 
