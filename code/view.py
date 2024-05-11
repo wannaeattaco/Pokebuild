@@ -126,7 +126,8 @@ class PokeBuilderView:
 
         ttk.Label(self.button_frame, text="Graph Type:").pack(side=tk.LEFT, padx=5)
         self.graph_type_var = tk.StringVar(value="Pie graph for selected pokemon")
-        graph_types = ["Pie graph for selected pokemon", "Bar graph for selected pokemon", "Stats by Type", "Correlation Matrix", "Hp Distribution"]
+        graph_types = ["Pie graph for selected pokemon", "Bar graph for selected pokemon",
+                                    "Stats by Type", "Correlation Matrix", "Hp Distribution"]
         self.graph_type_combobox = ttk.Combobox(self.button_frame, textvariable=self.graph_type_var,
                                                 values=graph_types, state="readonly")
         self.graph_type_combobox.pack(side=tk.LEFT, padx=5, pady=5)
@@ -147,7 +148,8 @@ class PokeBuilderView:
         self.stats_type_combobox.current(0)
         self.stats_type_combobox.pack(side=tk.LEFT, padx=5)
 
-        draw_graph_button = ttk.Button(self.button_frame, text="Draw graph", command=self.trigger_graph_drawing)
+        draw_graph_button = ttk.Button(self.button_frame, text="Draw graph",
+                                       command=self.trigger_graph_drawing)
         draw_graph_button.pack(padx=5)
 
         self.prepare_plot_area()
@@ -176,7 +178,7 @@ class PokeBuilderView:
         ttk.Label(frame, text="Select Team:").pack(side=tk.LEFT, padx=5)
         self.team_combobox = ttk.Combobox(frame, textvariable=self.team_selection_var,
                                           values=teams, state="readonly")
-        
+
         self.team_combobox.pack(side=tk.LEFT, padx=5)
         self.team_combobox.bind('<<ComboboxSelected>>', self.update_team_graph)
 
@@ -242,10 +244,21 @@ class PokeBuilderView:
     def plot_bar_chart(self, data, attribute):
         """Creates and displays a bar chart for the specified 
             attribute of the selected Pokémon"""
-        self.ax.bar(data['Name'], data[attribute], color='skyblue')
-        self.ax.set_title(f'{attribute} Distribution')
-        self.ax.set_ylabel(attribute)
-        self.ax.set_xticklabels(data['Name'], rotation=45, ha="right")
+        # Ensure you have data to plot
+        if data.empty:
+            self.ax.text(0.5, 0.5, 'No data to display', ha='center', va='center', transform=self.ax.transAxes)
+            self.ax.set_title('No data available')
+        else:
+            # Plotting the data
+            self.ax.bar(range(len(data['Name'])), data[attribute], color='skyblue')
+            self.ax.set_title(f'{attribute} Distribution')
+            self.ax.set_ylabel(attribute)
+            
+            # Setting the x-ticks and x-tick labels
+            self.ax.set_xticks(range(len(data['Name'])))
+            self.ax.set_xticklabels(data['Name'], rotation=45, ha="right")
+
+        self.canvas.draw()
 
     def plot_hp_distribution(self, data):
         """Plot the distribution of HP among Pokémon using a histogram."""
@@ -385,8 +398,8 @@ class PokeBuilderView:
         if not self.current_team:
             messagebox.showerror("No Team", "No Pokémon have been added to the team.")
             return
-        messagebox.showinfo("Team Confirmed", f"Your team with {len(self.current_team)}" , 
-                            f"Pokémon has been confirmed.")
+        messagebox.showinfo("Team Confirmed", f"Your team with {len(self.current_team)} Pokémon has been confirmed.")
+
 
     def update_graph_listbox(self):
         """Updates the listbox in the "Graph View" tab

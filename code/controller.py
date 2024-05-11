@@ -39,7 +39,7 @@ class PokeBuilderController:
         """Function for filter pokemon list"""
         self.apply_filters()
 
-    def apply_filters(self):
+    def apply_filters(self, event=None):
         """Function to apply filters to the pokemon list."""
         name = self.view.search_entry.get()
         type1 = self.view.type_combobox.get()
