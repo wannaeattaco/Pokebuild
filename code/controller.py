@@ -13,7 +13,7 @@ class PokeBuilderController:
     def __init__(self, view, model):
         self.view = view
         self.model = model
-        self.saved_teams = pd.read_csv('saved_teams.csv') if os.path.exists('saved_teams.csv') \
+        self.saved_teams = pd.read_csv('data/saved_teams.csv') if os.path.exists('data/saved_teams.csv') \
             else pd.DataFrame(columns=['Team Name', 'Members'])
 
     def initialize(self):
@@ -84,4 +84,4 @@ class PokeBuilderController:
     # Data Persistence
     def save_teams_data(self):
         """Function for save team into file"""
-        self.model.saved_teams.to_csv('saved_teams.csv', index=False)
+        self.model.saved_teams.to_csv('data/saved_teams.csv', index=False)

@@ -8,7 +8,7 @@ class PokemonModel:
 
     def __init__(self, file_path):
         self.pokemon_df = pd.read_csv(file_path)
-        self.saved_teams_file = 'saved_teams.csv'
+        self.saved_teams_file = 'data/saved_teams.csv'
         if os.path.exists(self.saved_teams_file):
             self.saved_teams = pd.read_csv(self.saved_teams_file)
         else:
@@ -73,7 +73,7 @@ class PokemonModel:
             new_entry = pd.DataFrame({'Team Name': [team_name],
                                       'Members': [','.join(team_members)]})
             self.saved_teams = pd.concat([self.saved_teams, new_entry], ignore_index=True)
-            self.saved_teams.to_csv('saved_teams.csv', index=False)
+            self.saved_teams.to_csv('data/saved_teams.csv', index=False)
 
     def delete_team(self, index):
         """Function for delete a team by its index in the saved teams DataFrame."""

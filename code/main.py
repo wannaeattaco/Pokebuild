@@ -8,7 +8,7 @@ from controller import PokeBuilderController
 
 if __name__ == "__main__":
     root = tk.Tk()
-    model = PokemonModel('Pokemon.csv')
+    model = PokemonModel('data/Pokemon.csv')
     controller = PokeBuilderController(None, model)
     pokemon_data = model.get_pokemon_data()
     if isinstance(pokemon_data, list):
