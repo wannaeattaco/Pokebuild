@@ -18,7 +18,7 @@ class PokeBuilderController:
 
     def initialize(self):
         """Function for View Initialization and Data Retrieval"""
-        if self.view:  # Check that view is not None
+        if self.view:
             self.setup_bindings()
             self.initialize_pokemon_list()
 
@@ -31,7 +31,7 @@ class PokeBuilderController:
 
     def initialize_pokemon_list(self):
         """Get pokemons' data from dataset"""
-        pokemon_data = self.model.get_pokemon_data()  # Get initial data
+        pokemon_data = self.model.get_pokemon_data()
         self.view.update_pokemon_list(pokemon_data)
 
     # Team Building and Confirmation
@@ -51,17 +51,10 @@ class PokeBuilderController:
         selected_items = self.view.selected_team_listbox.get(0, tk.END)
         team_name = "Default Team"
 
-        # Clear existing team members if reusing the same team name
         self.model.clear_team_members(team_name)
-
-        # Add new members
         for item in selected_items:
             self.model.add_pokemon_to_team(team_name, item)
-
-        # Save the current state of teams to the data file
         self.save_teams_data()
-
-        # Update the team list in the UI
         self.view.update_saved_teams_tab()
 
     # Team Display and Management
@@ -82,7 +75,7 @@ class PokeBuilderController:
         """Function for delete selected team from file"""
         if index is not None:
             self.model.delete_team(index)
-            self.view.update_saved_teams_tab()  # Update the view to reflect the deletion
+            self.view.update_saved_teams_tab()
             messagebox.showinfo("Success", "Team deleted successfully!")
 
         else:

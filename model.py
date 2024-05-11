@@ -32,7 +32,7 @@ class PokemonModel:
     def get_types(self):
         """Function to get Pokemons' types from dataset"""
         types = pd.concat([self.pokemon_df['Type 1'], self.pokemon_df['Type 2']]).unique()
-        types = [t for t in types if t is not None]  # Remove NaNs
+        types = [t for t in types if t is not None]
         types.sort()
         return types
 
@@ -78,7 +78,6 @@ class PokemonModel:
     def delete_team(self, index):
         """Function for delete a team by its index in the saved teams DataFrame."""
         if 0 <= index < len(self.saved_teams):
-            # Drop the team at the given index and reset the DataFrame index
             self.saved_teams.drop(index, inplace=True)
             self.saved_teams.reset_index(drop=True, inplace=True)
 
@@ -115,15 +114,12 @@ class PokemonModel:
         """
         Retrieve data for all Pokémon in a specified team by team name.
         """
-        # Fetch team members' names based on the team name
         team_data = self.saved_teams[self.saved_teams['Team Name'].str.lower() == team_name.lower()]
         if team_data.empty:
-            return pd.DataFrame()  # Return an empty DataFrame if the team does not exist
+            return pd.DataFrame()
 
-        # Extract member names from the team entry
         members = team_data.iloc[0]['Members'].split(',')
-        members = [name.strip() for name in members]  # Clean any leading/trailing spaces
+        members = [name.strip() for name in members]
 
-        # Retrieve Pokémon data for each member
         pokemon_data = self.pokemon_df[self.pokemon_df['Name'].isin(members)]
         return pokemon_data

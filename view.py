@@ -52,11 +52,9 @@ class PokeBuilderView:
 
     def setup_select_tab(self):
         """Sets up the UI elements specific to the "Select Pokémon" tab"""
-        # Organize layout with frames for different sections
         top_frame = ttk.Frame(self.select_tab)
         top_frame.pack(fill=tk.X, padx=10, pady=10)
 
-        # Search Bar at the top
         ttk.Label(top_frame, text="Search Pokémon:").pack(side=tk.LEFT, padx=5)
         self.search_entry = ttk.Entry(top_frame)
         self.search_entry.pack(side=tk.LEFT, fill=tk.X, expand=True)
@@ -65,17 +63,15 @@ class PokeBuilderView:
         filter_frame = ttk.Frame(self.select_tab)
         filter_frame.pack(fill=tk.X, padx=10, pady=10)
 
-        # Type Filter
         ttk.Label(filter_frame, text="Type:").pack(side=tk.LEFT)
         self.type_var = tk.StringVar()
         types = ['All'] + sorted(self.pokemon_data['Type 1'].dropna().unique().tolist())
         self.type_combobox = ttk.Combobox(filter_frame,textvariable=self.type_var,
                                           values=types, state="readonly")
-        self.type_combobox.current(0)  # set to 'All'
+        self.type_combobox.current(0)
         self.type_combobox.pack(side=tk.LEFT, padx=5)
         self.type_combobox.bind('<<ComboboxSelected>>', self.update_pokemon_list)
 
-        # Sorting options
         ttk.Label(filter_frame, text="Sort by:").pack(side=tk.LEFT)
         self.sort_var = tk.StringVar(value="Name")
         ttk.Radiobutton(filter_frame, text="Name", variable=self.sort_var,
@@ -85,7 +81,6 @@ class PokeBuilderView:
         ttk.Radiobutton(filter_frame, text="Number", variable=self.sort_var, value="Number",
                         command=self.update_pokemon_list).pack(side=tk.LEFT)
 
-        # Pokémon listbox with scrollbar
         listbox_frame = ttk.Frame(self.select_tab)
         listbox_frame.pack(side=tk.LEFT, fill=tk.BOTH, expand=True, padx=10, pady=10)
         self.pokemon_listbox = tk.Listbox(listbox_frame, height=20)
@@ -96,7 +91,6 @@ class PokeBuilderView:
         self.pokemon_listbox.config(yscrollcommand=scrollbar.set)
         self.populate_pokemon_listbox()
 
-        # Frame for selected Pokémon list and management buttons
         management_frame = ttk.Frame(self.select_tab)
         management_frame.pack(fill=tk.X, expand=True, padx=15, pady=10)
 
@@ -130,15 +124,13 @@ class PokeBuilderView:
         self.button_frame = ttk.Frame(self.graph_tab)
         self.button_frame.pack(fill=tk.BOTH, expand=True)
 
-        # Graph Type Selection
         ttk.Label(self.button_frame, text="Graph Type:").pack(side=tk.LEFT, padx=5)
-        self.graph_type_var = tk.StringVar(value="Pie")
-        graph_types = ["Pie", "Bar", "Stats by Type", "Correlation Matrix", "Hp Distribution"]
+        self.graph_type_var = tk.StringVar(value="Pie graph for selected pokemon")
+        graph_types = ["Pie graph for selected pokemon", "Bar graph for selected pokemon", "Stats by Type", "Correlation Matrix", "Hp Distribution"]
         self.graph_type_combobox = ttk.Combobox(self.button_frame, textvariable=self.graph_type_var,
                                                 values=graph_types, state="readonly")
         self.graph_type_combobox.pack(side=tk.LEFT, padx=5, pady=5)
 
-        # Attribute Selection
         ttk.Label(self.button_frame, text="Attribute for Graph:").pack(side=tk.LEFT, padx=5)
         self.graph_attribute_var = tk.StringVar()
         attributes = ['HP', 'Attack', 'Defense', 'Sp. Atk', 'Sp. Def', 'Speed']
@@ -147,7 +139,6 @@ class PokeBuilderView:
         self.graph_attribute_combobox.current(0)
         self.graph_attribute_combobox.pack(side=tk.LEFT, padx=5)
 
-        # Type selection for stats plotting (only enabled for certain graph types)
         ttk.Label(self.button_frame, text="Type for Stats:").pack(side=tk.LEFT, padx=5)
         self.stats_type_var = tk.StringVar()
         types = ['All'] + sorted(self.pokemon_data['Type 1'].dropna().unique().tolist())
@@ -180,7 +171,6 @@ class PokeBuilderView:
         frame = ttk.Frame(self.team_graph_tab)
         frame.pack(fill=tk.BOTH, expand=True)
 
-        # Dropdown to select a team
         self.team_selection_var = tk.StringVar()
         teams = self.model.load_all_team_names()
         ttk.Label(frame, text="Select Team:").pack(side=tk.LEFT, padx=5)
@@ -190,11 +180,9 @@ class PokeBuilderView:
         self.team_combobox.pack(side=tk.LEFT, padx=5)
         self.team_combobox.bind('<<ComboboxSelected>>', self.update_team_graph)
 
-        # Quit button
         quit_button = ttk.Button(frame, text="Quit", command=self.master.quit)
         quit_button.pack(side=tk.RIGHT, padx=10)
 
-        # Placeholder for graphs
         self.team_graph_frame = ttk.Frame(self.team_graph_tab)
         self.team_graph_frame.pack(fill=tk.BOTH, expand=True)
         self.prepare_plot_area_team()
@@ -204,20 +192,16 @@ class PokeBuilderView:
         default_data = self.controller.initialize_pokemon_list()
         self.update_pokemon_list(default_data)
 
-        # Create a frame inside the team tab for layout
         team_frame = ttk.Frame(self.team_tab)
         team_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=10)
 
-        # Add a listbox to display current team members
         self.team_listbox = tk.Listbox(team_frame, height=10)
         self.team_listbox.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         self.update_saved_teams_tab()
 
-        # Create a frame for buttons
         button_frame = ttk.Frame(team_frame)
         button_frame.pack(fill=tk.X, pady=5)
 
-        # Add button to confirm the selection of the team
         self.confirm_team_button = ttk.Button(button_frame, text="Delete Selected Team",
                                                 command=self.on_delete_button_clicked)
         self.confirm_team_button.pack(padx=5, pady=5)
@@ -236,19 +220,16 @@ class PokeBuilderView:
             sizes = data[attribute].replace(0, np.nan).dropna()
             labels = data.loc[sizes.index, 'Name']
 
-            # Check if there's valid data after filtering out zeros
             if sizes.empty:
                 self.ax.text(0.5, 0.5, 'No valid data to display', horizontalalignment='center',
                             verticalalignment='center', transform=self.ax.transAxes)
                 self.ax.set_title(f'No data available for {attribute}')
             else:
-                # Draw the pie chart
                 wedges, texts, autotexts = self.ax.pie(sizes, labels=labels,
                                                     autopct=lambda p: f'{p:.1f}% \
                                                         \n({p/100 * total:.1f})',
                                                     startangle=140, colors=plt.cm.tab20.colors)
 
-                # Ensure the pie chart is drawn as a circle
                 self.ax.axis('equal')
                 self.ax.set_title(f'Proportion of {attribute.capitalize()} among Selected Pokémon')
         else:
@@ -256,7 +237,6 @@ class PokeBuilderView:
                         verticalalignment='center', transform=self.ax.transAxes)
             self.ax.set_title(f'No valid data for {attribute}')
 
-        # Redraw the canvas with the updated plot
         self.canvas.draw()
 
     def plot_bar_chart(self, data, attribute):
@@ -280,7 +260,7 @@ class PokeBuilderView:
                     va='center', transform=self.ax.transAxes)
             self.ax.set_title('No data available')
 
-        self.canvas.draw()  # Update the canvas to show the new plot
+        self.canvas.draw()
 
     def plot_stats_by_type(self, data, attribute):
         """Plot bar graphs for Pokémon stats by their type using seaborn."""
@@ -301,15 +281,12 @@ class PokeBuilderView:
 
     def plot_correlations(self, data):
         """Displays statistical correlations as a heatmap."""
-        self.prepare_plot_area()  # Make sure plotting area is clear
+        self.prepare_plot_area()
 
-        # Calculate the correlation matrix.
         corr = data[['HP', 'Attack', 'Defense', 'Sp. Atk', 'Sp. Def', 'Speed']].corr()
 
-        # Create the heatmap with annotations and no colorbar.
         sns.heatmap(corr, annot=True, fmt=".2f", cmap='coolwarm', ax=self.ax, cbar=False)
 
-        # Set the title and refresh the canvas.
         self.ax.set_title('Stat Correlations')
         self.canvas.draw()
 
@@ -327,15 +304,13 @@ class PokeBuilderView:
 
     def plot_attribute_distribution_for_selected_pokemon(self, team_data):
         """Plot attribute distribution for the selected Pokémons' team using pie charts."""
-        # Prepare the plot area specifically for the team graph view tab
         self.prepare_plot_area_team()
 
         attributes = ['HP', 'Attack', 'Defense', 'Sp. Atk', 'Sp. Def', 'Speed']
 
-        # Create subplots within the team figure
-        self.team_figure.clear()  # Clear the figure to avoid overlap of plots
+        self.team_figure.clear()
         axes = self.team_figure.subplots(2, 3)
-        axes = axes.flatten()  # Flatten the axes array for easy iteration
+        axes = axes.flatten()
 
         for i, attribute in enumerate(attributes):
             if attribute in team_data.columns:
@@ -343,12 +318,11 @@ class PokeBuilderView:
                 total_max = pokemon_max.sum()
 
                 if total_max > 0:
-                    # Calculate percentages for pie slices
                     axes[i].pie(pokemon_max, labels=pokemon_max.index,
                                 autopct=lambda p: f'{p:.1f}%\n{p/100 * total_max:.1f}',
                                 startangle=140)
                     axes[i].set_title(f'{attribute.capitalize()} Distribution')
-                    axes[i].axis('equal')  # Ensure pie chart is drawn as a circle
+                    axes[i].axis('equal')
                 else:
                     axes[i].text(0.5, 0.5, 'No data available',
                                 horizontalalignment='center', verticalalignment='center')
@@ -357,26 +331,22 @@ class PokeBuilderView:
                 axes[i].text(0.5, 0.5, 'Attribute not found', ha='center')
                 axes[i].set_title(f'{attribute.capitalize()} Distribution')
 
-        # Tighten layout and redraw the canvas with the new plots
         self.team_figure.tight_layout()
         self.team_canvas.draw()
 
     def prepare_plot_area_team(self):
         """Prepare the graph area for the team graph view"""
         if hasattr(self, 'team_canvas'):
-            self.team_canvas.get_tk_widget().destroy()  # Remove old canvas
+            self.team_canvas.get_tk_widget().destroy()
 
-        # Create a new figure for team graphs
         self.team_figure = Figure(figsize=(6, 4), dpi=100)
         self.team_ax = self.team_figure.add_subplot(111)
-        self.team_ax.clear()  # Clear the subplot to ensure it's empty
+        self.team_ax.clear()
 
-        # Create a new canvas specifically for the team graph view tab
         self.team_canvas = FigureCanvasTkAgg(self.team_figure, self.team_graph_frame)
         self.team_canvas.draw()
         self.team_canvas.get_tk_widget().pack(fill=tk.BOTH, expand=True)
 
-        # Placeholder text or initial graph setup
         self.team_ax.text(0.5, 0.5, 'Select a team and draw graph',
                         horizontalalignment='center', verticalalignment='center',
                         transform=self.team_ax.transAxes, color='gray', alpha=0.5)
@@ -397,7 +367,7 @@ class PokeBuilderView:
     def delete_selected_pokemon(self):
         """Removes the selected Pokémon from the current team and updates the team listbox"""
         selected_indices = self.selected_team_listbox.curselection()
-        for index in reversed(selected_indices):  # Start from end to avoid index shifting
+        for index in reversed(selected_indices):
             pokemon_to_remove = self.selected_team_listbox.get(index)
             self.selected_team_listbox.delete(index)
             if pokemon_to_remove in self.current_team:
@@ -407,16 +377,16 @@ class PokeBuilderView:
     def clear_team(self):
         """Clears the current team selection and listbox"""
         self.selected_team_listbox.delete(0, tk.END)
-        self.current_team = []  # Reset the current team list
-        self.update_graph_listbox()  # Refresh related UI components
+        self.current_team = []
+        self.update_graph_listbox()
 
     def confirm_team(self):
         """Prompts the user for confirmation of the selected team"""
         if not self.current_team:
             messagebox.showerror("No Team", "No Pokémon have been added to the team.")
             return
-        messagebox.showinfo("Team Confirmed", f"Your team with \
-                            {len(self.current_team)} Pokémon has been confirmed.")
+        messagebox.showinfo("Team Confirmed", f"Your team with {len(self.current_team)}" , 
+                            f"Pokémon has been confirmed.")
 
     def update_graph_listbox(self):
         """Updates the listbox in the "Graph View" tab
@@ -445,17 +415,14 @@ class PokeBuilderView:
 
         filtered_data = self.pokemon_data.copy()
 
-        # Filter by type if not 'All'
         if type_filter != "All":
             filtered_data = filtered_data[(filtered_data['Type 1'] == type_filter)
                 | (filtered_data['Type 2'] == type_filter)]
 
-        # Apply search filter
         if search_term:
             filtered_data = filtered_data[filtered_data['Name'].str.lower() \
                                             .str.contains(search_term)]
 
-        # Sorting
         if sort_by == "Name":
             filtered_data = filtered_data.sort_values(by="Name")
         elif sort_by == "Type":
@@ -463,7 +430,7 @@ class PokeBuilderView:
         elif sort_by == "Number":
             filtered_data = filtered_data.sort_values(by="#")
 
-        self.pokemon_listbox.delete(0, tk.END)  # Clear existing entries
+        self.pokemon_listbox.delete(0, tk.END)
         if filtered_data.empty:
             self.pokemon_listbox.insert(tk.END, "No results found.")
         else:
@@ -495,7 +462,7 @@ class PokeBuilderView:
 
     def trigger_graph_drawing(self):
         """Draw graph from provided attribute"""
-        attribute = self.graph_attribute_var.get()  # This should be a single string
+        attribute = self.graph_attribute_var.get()
         graph_type = self.graph_type_var.get()
         pokemon_type = self.stats_type_var.get()
         current_team = self.get_current_team()
@@ -515,7 +482,7 @@ class PokeBuilderView:
                 messagebox.showinfo("No Data", "No Pokémon data available.")
                 return
             if graph_type == "Stats by Type":
-                self.plot_stats_by_type(team_data, attribute)  # Pass attribute directly
+                self.plot_stats_by_type(team_data, attribute)
             elif graph_type == "Correlation Matrix":
                 self.plot_correlations(team_data)
             elif graph_type == "Hp Distribution":
@@ -525,9 +492,9 @@ class PokeBuilderView:
             if team_data.empty:
                 messagebox.showinfo("No Data", "No Pokémon data available to draw the graph.")
                 return
-            if graph_type == "Pie":
+            if graph_type == "Pie graph for selected pokemon":
                 self.plot_pie_chart(team_data, attribute)
-            elif graph_type == "Bar":
+            elif graph_type == "Bar graph for selected pokemon":
                 self.plot_bar_chart(team_data, attribute)
 
         self.canvas.draw()
