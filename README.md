@@ -66,4 +66,4 @@ python main.py
 <img src="uml.png" alt="UML Diagram"/>
 
 ## Sequence Diagram
-<img src="sequence_ia.png" alt="Sequence Diagram"/>
+<img src="sequence_dia.png" alt="Sequence Diagram"/>
