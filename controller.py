@@ -1,13 +1,17 @@
 # controller.py
+"""File for controller class"""
+import os
 import tkinter as tk
 from tkinter import messagebox
 import pandas as pd
-import os
+
 class PokeBuilderController:
+    """Controller class of the application"""
     def __init__(self, view, model):
         self.view = view
         self.model = model
-        self.saved_teams = pd.read_csv('saved_teams.csv') if os.path.exists('saved_teams.csv') else pd.DataFrame(columns=['Team Name', 'Members'])
+        self.saved_teams = pd.read_csv('saved_teams.csv') if os.path.exists('saved_teams.csv') \
+            else pd.DataFrame(columns=['Team Name', 'Members'])
 
     def initialize(self):
         if self.view:  # Check that view is not None
@@ -26,22 +30,23 @@ class PokeBuilderController:
         pokemon_data = self.model.get_pokemon_data()  # Get initial data
         self.view.update_pokemon_list(pokemon_data)
 
-    def filter_pokemon(self, event=None):
+    def filter_pokemon(self):
         self.apply_filters()
 
-    def apply_filters(self, event=None):
+    def apply_filters(self):
         name = self.view.search_entry.get()
         type1 = self.view.type_combobox.get()
         stat = self.view.stat_combobox.get()
         min_value = self.view.min_value_entry.get() or 0
-        filtered_data = self.model.get_pokemon_data(name=name, type1=type1, stat=stat, min_value=min_value)
+        filtered_data = self.model.get_pokemon_data(name=name, type1=type1,
+                                                    stat=stat, min_value=min_value)
         self.view.update_pokemon_list(filtered_data)
 
-    def confirm_team(self, event):
+    def confirm_team(self):
         selected_items = self.view.selected_team_listbox.get(0, tk.END)
-        team_name = "Default Team"  # Consider allowing the user to specify this or making it unique each time
+        team_name = "Default Team"
 
-        # Clear existing team members if reusing the same team name; comment this out if accumulating members
+        # Clear existing team members if reusing the same team name
         self.model.clear_team_members(team_name)
 
         # Add new members
@@ -54,29 +59,24 @@ class PokeBuilderController:
         # Update the team list in the UI
         self.view.update_saved_teams_tab()
 
-    def display_pokemon_details(self, event):
-        # Implement display logic for selected Pokémon details
-        pass
-    
-    def load_teams(self):
-        try:
-            self.saved_teams = pd.read_csv('saved_teams.csv')
-        except FileNotFoundError:
-            self.saved_teams = pd.DataFrame(columns=['Team Name', 'Members'])
+    def load_team(self, team_name):
+        members = self.model.load_team(team_name)
+        if members:
+            team_data = self.model.get_pokemon_data_by_names(members)
+            self.view.display_graph_for_team(team_data)
+        else:
+            self.view.display_error("No team members found for the selected team.")
 
     def save_current_team(self, team_name, current_team):
         self.model.save_team(team_name, current_team)
 
     def delete_team(self, index):
         if index is not None:
-            try:
-                self.model.delete_team(index)
-                self.view.update_saved_teams_tab()  # Update the view to reflect the deletion
-                messagebox.showinfo("Success", "Team deleted successfully!")
-            except Exception as e:
-                messagebox.showerror("Error", str(e))
+            self.model.delete_team(index)
+            self.view.update_saved_teams_tab()  # Update the view to reflect the deletion
+            messagebox.showinfo("Success", "Team deleted successfully!")
+
         else:
             messagebox.showerror("Error", "No team selected for deletion.")
     def save_teams_data(self):
-        # Assuming saved_teams is a DataFrame holding all team data
         self.model.saved_teams.to_csv('saved_teams.csv', index=False)
