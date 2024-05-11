@@ -61,3 +61,9 @@ python main.py
 ```
 
 (For macOS users, use `python3 main.py` instead of `python main.py`)
+
+## UML Diagram
+<img src="uml.png" alt="UML Diagram"/>
+
+## Sequence Diagram
+<img src="sequence_ia.png" alt="Sequence Diagram"/>
