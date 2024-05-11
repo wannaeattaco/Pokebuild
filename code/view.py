@@ -242,21 +242,30 @@ class PokeBuilderView:
         self.canvas.draw()
 
     def plot_bar_chart(self, data, attribute):
-        """Creates and displays a bar chart for the specified 
-            attribute of the selected Pokémon"""
+        """Creates and displays a bar chart for the specified attribute of the selected Pokémon."""
+        self.prepare_plot_area()
+
         # Ensure you have data to plot
         if data.empty:
             self.ax.text(0.5, 0.5, 'No data to display', ha='center', va='center', transform=self.ax.transAxes)
             self.ax.set_title('No data available')
         else:
             # Plotting the data
-            self.ax.bar(range(len(data['Name'])), data[attribute], color='skyblue')
+            names = data['Name']
+            values = data[attribute]
+            indices = np.arange(len(names))  # the x locations for the groups
+
+            self.ax.bar(indices, values, color='skyblue')
             self.ax.set_title(f'{attribute} Distribution')
+            self.ax.set_xlabel('Pokémon')
             self.ax.set_ylabel(attribute)
-            
+
             # Setting the x-ticks and x-tick labels
-            self.ax.set_xticks(range(len(data['Name'])))
-            self.ax.set_xticklabels(data['Name'], rotation=45, ha="right")
+            self.ax.set_xticks(indices)
+            self.ax.set_xticklabels(names, rotation=45, ha="right")
+
+            # Dynamically adjust the bottom margin to accommodate the rotated labels
+            plt.gcf().subplots_adjust(bottom=0.15 + len(names) * 0.005)
 
         self.canvas.draw()
 
