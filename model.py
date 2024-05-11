@@ -3,9 +3,9 @@
 import os
 import pandas as pd
 
-
 class PokemonModel:
     """Model class of program"""
+
     def __init__(self, file_path):
         self.pokemon_df = pd.read_csv(file_path)
         self.saved_teams_file = 'saved_teams.csv'
@@ -32,28 +32,30 @@ class PokemonModel:
     def get_types(self):
         """Function to get Pokemons' types from dataset"""
         types = pd.concat([self.pokemon_df['Type 1'], self.pokemon_df['Type 2']]).unique()
-        types = [t for t in types if t == t]  # remove NaNs
+        types = [t for t in types if t is not None]  # Remove NaNs
         types.sort()
         return types
 
     def modify_team(self, team_name, pokemon_name, action="add"):
         """Function for modify team's members"""
-        team = self.teams_data.loc[self.teams_data['Team Name'] == team_name]
+        team = self.saved_teams[self.saved_teams['Team Name'].str.strip().str.lower()
+                                     == team_name.strip().lower()]
         if team.empty:
             if action == "add":
-                self.teams_data = self.teams_data.append({
+                self.saved_teams = self.saved_teams.append({
                     'Team Name': team_name, 'Members': [pokemon_name]
                 }, ignore_index=True)
         else:
-            current_members = team['Members'].iloc[0]
+            current_members = team['Members'].iloc[0].split(',')
+            current_members = [member.strip() for member in current_members]
             if action == "add":
-                current_members.append(pokemon_name) \
-                    if pokemon_name not in current_members else None
+                if pokemon_name not in current_members:
+                    current_members.append(pokemon_name)
             elif action == "remove":
-                current_members.remove(pokemon_name) \
-                    if pokemon_name in current_members else None
-            self.teams_data.loc[self.teams_data['Team Name'] == team_name, 'Members'] \
-                = [current_members]
+                if pokemon_name in current_members:
+                    current_members.remove(pokemon_name)
+            self.saved_teams.loc[self.saved_teams['Team Name'].str.lower() == \
+                    team_name.lower(), 'Members'] = [','.join(current_members)]
         self.save_team()
 
     def load_team(self, team_name):
@@ -65,21 +67,20 @@ class PokemonModel:
             return members
         return []
 
-    def save_team(self, team_name, team_members):
-        """Functoin to save the seleceted team into file"""
+    def save_team(self, team_name=None, team_members=None):
+        """Function to save the selected team into file"""
         if team_name and team_members:
             new_entry = pd.DataFrame({'Team Name': [team_name],
                                       'Members': [','.join(team_members)]})
-            self.saved_teams = pd.concat([self.saved_teams, new_entry], ignore_index=True, )
+            self.saved_teams = pd.concat([self.saved_teams, new_entry], ignore_index=True)
             self.saved_teams.to_csv('saved_teams.csv', index=False)
 
     def delete_team(self, index):
+        """Function for delete a team by its index in the saved teams DataFrame."""
         if 0 <= index < len(self.saved_teams):
             # Drop the team at the given index and reset the DataFrame index
             self.saved_teams.drop(index, inplace=True)
             self.saved_teams.reset_index(drop=True, inplace=True)
-            # Save the updated DataFrame back to the CSV to reflect changes
-            self.saved_teams.to_csv(self.saved_teams_file, index=False)
 
     def add_pokemon_to_team(self, team_name, pokemon):
         """Function for add new member to team"""
@@ -113,12 +114,6 @@ class PokemonModel:
     def get_team_data(self, team_name):
         """
         Retrieve data for all Pokémon in a specified team by team name.
-        
-        Parameters:
-            team_name (str): The name of the team to retrieve data for.
-
-        Returns:
-            DataFrame: A DataFrame containing all Pokémon data for the given team.
         """
         # Fetch team members' names based on the team name
         team_data = self.saved_teams[self.saved_teams['Team Name'].str.lower() == team_name.lower()]
