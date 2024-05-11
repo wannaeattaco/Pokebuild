@@ -75,20 +75,6 @@ class PokeBuilderView:
         self.type_combobox.pack(side=tk.LEFT, padx=5)
         self.type_combobox.bind('<<ComboboxSelected>>', self.update_pokemon_list)
 
-        ttk.Label(filter_frame, text="Stat:").pack(side=tk.LEFT)
-        self.stat_var = tk.StringVar()
-        stats = ['All', 'HP', 'Attack', 'Defense', 'Sp. Atk', 'Sp. Def', 'Speed']
-        self.stat_combobox = ttk.Combobox(filter_frame, textvariable=self.stat_var,
-                                          values=stats, state="readonly")
-        self.stat_combobox.current(0)  # set to 'All'
-        self.stat_combobox.pack(side=tk.LEFT, padx=5)
-
-        # Stat Threshold
-        ttk.Label(filter_frame, text="Min Value:").pack(side=tk.LEFT)
-        self.stat_threshold_var = tk.IntVar()
-        self.min_value_entry = ttk.Entry(filter_frame, textvariable=self.stat_threshold_var)
-        self.min_value_entry.pack(side=tk.LEFT, padx=5)
-
         # Sorting options
         ttk.Label(filter_frame, text="Sort by:").pack(side=tk.LEFT)
         self.sort_var = tk.StringVar(value="Name")
@@ -170,6 +156,9 @@ class PokeBuilderView:
         self.stats_type_combobox.current(0)
         self.stats_type_combobox.pack(side=tk.LEFT, padx=5)
 
+        draw_graph_button = ttk.Button(self.button_frame, text="Draw graph", command=self.trigger_graph_drawing)
+        draw_graph_button.pack(padx=5)
+
         self.prepare_plot_area()
 
         self.graph_listbox = tk.Listbox(self.graph_tab, height=10)
@@ -197,12 +186,9 @@ class PokeBuilderView:
         ttk.Label(frame, text="Select Team:").pack(side=tk.LEFT, padx=5)
         self.team_combobox = ttk.Combobox(frame, textvariable=self.team_selection_var,
                                           values=teams, state="readonly")
+        
         self.team_combobox.pack(side=tk.LEFT, padx=5)
         self.team_combobox.bind('<<ComboboxSelected>>', self.update_team_graph)
-
-        # Button to trigger graph update
-        draw_button = ttk.Button(frame, text="Draw Graph", command=self.update_team_graph)
-        draw_button.pack(side=tk.LEFT, padx=10)
 
         # Quit button
         quit_button = ttk.Button(frame, text="Quit", command=self.master.quit)
@@ -454,8 +440,6 @@ class PokeBuilderView:
     def update_pokemon_list(self, event=None):
         """Filter the pokemons' name list"""
         type_filter = self.type_var.get()
-        stat = self.stat_combobox.get()
-        stat_threshold = self.stat_threshold_var.get()
         sort_by = self.sort_var.get()
         search_term = self.search_entry.get().strip().lower()
 
@@ -465,10 +449,6 @@ class PokeBuilderView:
         if type_filter != "All":
             filtered_data = filtered_data[(filtered_data['Type 1'] == type_filter)
                 | (filtered_data['Type 2'] == type_filter)]
-
-        # Filter by stat if not 'All' and threshold is set
-        if stat != "All" and stat_threshold > 0:
-            filtered_data = filtered_data[filtered_data[stat] >= stat_threshold]
 
         # Apply search filter
         if search_term:
@@ -503,16 +483,6 @@ class PokeBuilderView:
         for _, row in self.model.saved_teams.iterrows():
             team_info = f"{row['Team Name']} - {row['Members']}"
             self.team_listbox.insert(tk.END, team_info)
-
-    def delete_selected_team(self):
-        """Deleted the selected saved team"""
-        selected_index = self.team_listbox.curselection()
-        if selected_index:
-            selected_index = selected_index[0]  # Get the actual index as an integer
-            self.controller.delete_team(selected_index)  # Pass this index to the controller
-            self.update_saved_teams_tab()
-        else:
-            messagebox.showerror("Error", "No team selected.")
 
     def on_delete_button_clicked(self):
         """Click for deletion"""

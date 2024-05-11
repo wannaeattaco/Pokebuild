@@ -23,13 +23,11 @@ class PokeBuilderController:
             self.initialize_pokemon_list()
 
     def setup_bindings(self):
-        """Function for set button and combobox in usinf filter"""
-        if self.view:  # Check if view is not None
+        """Setup event bindings for the UI elements."""
+        if self.view:
             self.view.type_combobox.bind('<<ComboboxSelected>>', self.apply_filters)
-            self.view.stat_combobox.bind('<<ComboboxSelected>>', self.apply_filters)
             self.view.search_entry.bind('<KeyRelease>', self.apply_filters)
-            self.view.min_value_entry.bind('<Return>', self.apply_filters)
-            self.view.confirm_team_button.bind('<Button-1>', self.confirm_team)
+            self.view.confirm_team_button.bind('<Button-1>', lambda event: self.confirm_team())
 
     def initialize_pokemon_list(self):
         """Get pokemons' data from dataset"""
@@ -42,13 +40,10 @@ class PokeBuilderController:
         self.apply_filters()
 
     def apply_filters(self):
-        """Function for apply filter into pokemon list"""
+        """Function to apply filters to the pokemon list."""
         name = self.view.search_entry.get()
         type1 = self.view.type_combobox.get()
-        stat = self.view.stat_combobox.get()
-        min_value = self.view.min_value_entry.get() or 0
-        filtered_data = self.model.get_pokemon_data(name=name, type1=type1,
-                                                    stat=stat, min_value=min_value)
+        filtered_data = self.model.get_pokemon_data(name=name, type1=type1)
         self.view.update_pokemon_list(filtered_data)
 
     def confirm_team(self):
