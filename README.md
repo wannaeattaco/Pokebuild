@@ -31,12 +31,16 @@ git clone https://github.com/wannaeattaco/Pokebuilder.git
 ```
 cd Pokebuilder
 ```
-2. Create virtual environment using this command.
+2. Change your directory to code
+```
+cd code
+```
+3. Create virtual environment using this command.
 ```
 python -m venv env
 ```
 
-3. Activate the virtual environment
+4. Activate the virtual environment
 ```
 # On Linux or MacOS
 source env/bin/activate
@@ -45,12 +49,12 @@ source env/bin/activate
 env\Scripts\activate
 ```
 
-4. Installing Dependencies
+5. Installing Dependencies
 ```
 pip install -r requirements.txt
 ```
 
-5. Run the application:
+6. Run the application:
 
 ```
 python main.py
